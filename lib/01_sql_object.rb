@@ -18,8 +18,15 @@ class SQLObject
   end
 
   def self.finalize!
-    columns.each do |col|
+    columns.each do |col_sym|
+      define_method( "#{col_sym.to_s}" ) do
+        attributes[col_sym]
+      end
 
+      define_method( "#{col_sym.to_s}=" ) do |val|
+        # instance_variable_set("@#{col_sym.to_s}", val)
+        attributes[col_sym] = val
+      end
     end
   end
 
@@ -44,7 +51,14 @@ class SQLObject
   end
 
   def initialize(params = {})
-    # ...
+
+    params.each do |key, value|
+
+        unless self.class.columns.include?(key.to_sym)
+          raise "unknown attribute '#{key}'"
+        end
+      attributes[key] = value
+    end
   end
 
   def attributes
