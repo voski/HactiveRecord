@@ -39,25 +39,42 @@ class SQLObject
   end
 
   def self.all
-    # ...
+    raw_data = DBConnection.execute(<<-SQL)
+      SELECT
+      #{table_name}.*
+      FROM
+      #{table_name}
+    SQL
+
+    parse_all(raw_data)
   end
 
   def self.parse_all(results)
-    # ...
+
+    results.map do |result|
+      self.new(result)
+    end
   end
 
   def self.find(id)
-    # ...
+    raw_data  = DBConnection.execute(<<-SQL, id: id)
+        SELECT
+          #{table_name}.*
+        FROM
+          #{table_name}
+        WHERE
+          #{table_name}.id = :id
+      SQL
+
+    parse_all(raw_data).first
   end
 
   def initialize(params = {})
-
     params.each do |key, value|
-
         unless self.class.columns.include?(key.to_sym)
           raise "unknown attribute '#{key}'"
         end
-      attributes[key] = value
+      attributes[key.to_sym] = value
     end
   end
 
