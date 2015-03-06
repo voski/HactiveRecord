@@ -95,6 +95,14 @@ class SQLObject
     "(#{qs.join(', ')})"
   end
 
+  def col_names_for_setting
+    col_array_setting = self.class.columns.map do |col|
+      "#{col.to_s} = ?"
+    end
+
+    col_array_setting.join(', ')
+  end
+
   def attribute_values
     self.class.columns.map do |col|
       attributes[col]
@@ -114,7 +122,14 @@ class SQLObject
   end
 
   def update
-    # ...
+    DBConnection.execute(<<-SQL, *attribute_values)
+      UPDATE
+        #{self.class.table_name}
+      SET
+        #{col_names_for_setting}
+      WHERE
+        id = #{self.id}
+    SQL
   end
 
   def save
