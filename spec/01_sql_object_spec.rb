@@ -121,6 +121,7 @@ describe SQLObject do
     end
 
     it '#insert inserts a new record' do
+      puts "test"
       expect(Cat.all.count).to eq(6)
     end
 
