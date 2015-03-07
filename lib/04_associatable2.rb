@@ -24,7 +24,7 @@ module Associatable
         #{join_this} ON #{from_here}.#{through_options.primary_key} = #{source_options.class_name.pluralize}.#{source_options.primary_key}
     SQL
 
-    self.class.parse_all(data)
+    source_options.model_class.parse_all(data).first
     end
   end
 end
